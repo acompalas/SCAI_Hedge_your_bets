@@ -1,58 +1,75 @@
+#Import Libraries
 import csv
 import pandas as pd
 import os
+import torch
+from sklearn.preprocessing import MinMaxScaler
 
-# Specify the path to the parent folder ("SCAI_comp")
-read_file = '/Users/andersoncompalas/Documents/SCAI_comp/datasets/nba_games.csv'
+#Read csv and load into a dataframe
+relative_path = 'datasets/nba_games.csv'
+read_file = os.path.join(os.getcwd(), relative_path)
+df = pd.read_csv(read_file, index_col = 0)
 
-# Specify the path for the new CSV file
-write_file = '/Users/andersoncompalas/Documents/SCAI_comp/datasets/games.csv'
+#Sort by date and drop irrelevant columns
+df = df.sort_values("date")
+df = df.reset_index(drop=True)
+del df["mp.1"]
+del df["mp_opp.1"]
+del df["index_opp"]
 
-# # Construct the full path to the CSV file
-# csv_file_path = os.path.join(parent_folder, dataset_folder, file_name)
+# Add a target column: "Whether team won next game"
+def add_target(group):
+    group = pd.concat([group, group["won"].shift(-1).rename("target")], axis=1)
+    return group
 
-# Initialize an empty list to store the data
-data_list = []
+df = df.groupby("team", group_keys=False).apply(add_target)
+df.loc[pd.isnull(df["target"]), "target"] = 2
+df["target"] = df["target"].astype(int, errors="ignore")
 
-# Open the CSV file in read mode
-with open(read_file, 'r') as csv_file:
-    # Create a CSV reader
-    csv_reader = csv.reader(csv_file)
-    
-    # Read the first row to get the column headers
-    headers = next(csv_reader)
-    
-    # Iterate through each row in the CSV file and create a dictionary for each row
-    for row in csv_reader:
-        row_dict = {header: value for header, value in zip(headers, row)}
-        data_list.append(row_dict)
+#Create copy dataframe without null values
+nulls = pd.isnull(df).sum()
+nulls = nulls[nulls > 0]
+valid_columns = df.columns[~df.columns.isin(nulls.index)]
+df = df[valid_columns].copy()
 
-# Open the new CSV file in write mode
-with open(write_file, 'w', newline='') as new_csv_file:
-    # Define the column headers based on the keys of the dictionaries
-    headers = data_list[0].keys()
+# Convert boolean column 'won' to binary (0 and 1)
+df['won'] = df['won'].astype(int)
 
-    # Create a CSV writer
-    csv_writer = csv.DictWriter(new_csv_file, fieldnames=headers)
-    
-    # Write the headers to the new CSV file
-    csv_writer.writeheader()
-    
-    # Write the data from the list of dictionaries to the new CSV file
-    for row in data_list:
-        csv_writer.writerow(row)
-        
-# Read the CSV file into a Pandas DataFrame
-df = pd.read_csv(write_file)
+#Select stat columns
+removed_columns = ["season", "date", "won", "target", "team", "team_opp"]
+selected_columns = df.columns[~df.columns.isin(removed_columns)]
 
-# Display the first few rows of the DataFrame to view the data
-print(df.head())
-        
+#Scale stat columns
+scaler = MinMaxScaler()
+df[selected_columns] = scaler.fit_transform(df[selected_columns])
 
+#Calculate rolling averages of stat columns
+rolling = df[list(selected_columns) + ["won", "team", "season"]]
 
+def find_team_averages(team):
+    # Apply rolling mean only to numeric columns
+    team[selected_columns] = team[selected_columns].rolling(10).mean()
+    return team
 
+# Group by team and season, then apply the rolling average function
+rolling = rolling.groupby(["team", "season"], group_keys=False).apply(find_team_averages)
+rolling_cols = [f"{col}_10" for col in rolling.columns]
+rolling.columns = rolling_cols
 
+#Concatenate new columns back into dataframe, dropping null rows and resetting index
+df = pd.concat([df,rolling], axis = 1)
+df = df.dropna()
+df = df.reset_index(drop=True)
 
+#Add future game data to columns
+def shift_col(team, col_name):
+    next_col = team[col_name].shift(-1)
+    return next_col
 
+def add_col(df, col_name):
+    return df.groupby("team", group_keys=False).apply(lambda x: shift_col(x, col_name))
 
+df["home_next"] = add_col(df, "home")
+df["team_opp_next"] = add_col(df, "team_opp")
+df["date_next"] = add_col(df, "date")
 
