@@ -30,8 +30,6 @@ class NBADataProcessor:
             return team
 
         rolling = rolling.groupby(["team", "season"], group_keys=False).apply(find_team_averages)
-        rolling_cols = [f"{col}_10" for col in rolling.columns]
-        rolling.columns = rolling_cols
 
         return rolling
 
@@ -81,6 +79,9 @@ class NBADataProcessor:
         self.df = self._scale_data(self.df, selected_columns)
         rolling = self._calculate_rolling_averages(self.df, selected_columns)
         
+        rolling_cols = [f"{col}_10" for col in rolling.columns]
+        rolling.columns = rolling_cols
+        
         #Concatenate new columns back into dataframe, dropping null and resetting index
         self.df = pd.concat([self.df, rolling], axis=1)
         self.df = self.df.dropna()
@@ -98,11 +99,12 @@ class NBADataProcessor:
 
         # Concatenate features and rolling averages, including home_next
         features_columns = team_x_cols + team_opp_next_x_cols + ["home_next"]
-        features_df = df[features_columns].copy()
 
-        # Scale the features
-        scaler = MinMaxScaler()
-        features_df[features_columns] = scaler.fit_transform(features_df[features_columns])
+        # Exclude columns with specific words
+        excluded_words = ["season", "date", "won", "target", "team", "team_opp"]
+        features_columns = [col for col in features_columns if not any(word in col for word in excluded_words)]
+
+        features_df = df[features_columns].copy()
 
         return features_df
 

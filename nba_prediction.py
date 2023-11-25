@@ -3,7 +3,10 @@ import csv
 import pandas as pd
 import os
 import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader
 from sklearn.preprocessing import MinMaxScaler
+from model import Net, NBADataset
 
 #Read csv and load into a dataframe
 relative_path = 'datasets/nba_games.csv'
@@ -72,4 +75,17 @@ def add_col(df, col_name):
 df["home_next"] = add_col(df, "home")
 df["team_opp_next"] = add_col(df, "team_opp")
 df["date_next"] = add_col(df, "date")
+
+full = df.merge(df[rolling_cols + ["team_opp_next", "date_next", "team"]], left_on=["team", "date_next"], right_on=["team_opp_next", "date_next"])
+
+# Extract features and target
+features_columns = ["team_rolling_10", "team_opp_rolling_10", "home_next"]
+target_column = "target" 
+
+features = df[features_columns].values
+target = df[target_column].values
+
+# Define dataset and dataloader
+dataset = NBADataset(features, target)
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
