@@ -1,8 +1,15 @@
 import os
 import pandas as pd
 import torch
+import torch.nn as nn
 from torch.utils.data import Dataset
 from sklearn.preprocessing import MinMaxScaler
+from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import torch.optim as optim
+
 
 class NBADataProcessor:
     def __init__(self, file_path):
@@ -89,25 +96,57 @@ class NBADataProcessor:
 
         #Add future game data to columns
         self.df = self._add_future_game_data(self.df)
+        
+        self.df = self.df.merge(self.df[rolling_cols + ["team_opp_next", "date_next", "team"]], left_on=["team", "date_next"], right_on=["team_opp_next", "date_next"])
 
         return self.df
     
     def _extract_features(self, df):
-        # Extract features for team_x and team_opp_next_x
-        team_x_cols = [col for col in df.columns if '_10_x' in col and 'opp' not in col]
-        team_opp_next_x_cols = [col for col in df.columns if 'opp_10_x' in col]
+        
+        # # Extract features for team_x and team_opp_next_x
+        # team_x_cols = [col for col in df.columns if '_10_x' in col and 'opp' not in col]
+        # team_opp_next_x_cols = [col for col in df.columns if 'opp_10_x' in col]
 
-        # Concatenate features and rolling averages, including home_next
-        features_columns = team_x_cols + team_opp_next_x_cols + ["home_next"]
-
+        # # Concatenate features and rolling averages, including home_next
+        # features_columns = team_x_cols + team_opp_next_x_cols + ["home_next"]
+        
+        removed_columns = list(self.df.columns[self.df.dtypes == "object"])
+        selected_columns = self.df.columns[~self.df.columns.isin(removed_columns)]
+        
         # Exclude columns with specific words
         excluded_words = ["season", "date", "won", "target", "team", "team_opp"]
-        features_columns = [col for col in features_columns if not any(word in col for word in excluded_words)]
-
+        features_columns = [col for col in selected_columns if not any(word in col for word in excluded_words)]
+        # features_columns = [col for col in features_columns if not any(word in col for word in excluded_words)]
+        
         features_df = df[features_columns].copy()
 
         return features_df
+    
+    def load_training_data(self):
+        season_df = self.df[["season", "target"]].copy()
 
+        # Extract features and target using the _extract_features method
+        features_df = self._extract_features(self.df)
+
+        # Concatenate season and date columns back to features dataframe
+        features_df = pd.concat([season_df, features_df], axis=1)
+
+        # Define features and target
+        target_column = "target"
+
+        # Define features and target
+        features_columns = [col for col in features_df.columns if col not in ["season", "target"]]
+
+        # Extract features and target for training and testing sets
+        train_features = features_df[features_columns].values
+        train_target = features_df[target_column].values
+
+        # Create DataLoader for training
+        train_dataset = NBADataset(train_features, train_target)
+        train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+        return train_dataloader, features_columns, features_df
+    
 class NBADataset(Dataset):
     def __init__(self, features, target):
         self.features = features

@@ -1,58 +1,44 @@
 import os
+import pandas as pd
 import torch
-from torch.utils.data import DataLoader
+import torch.nn as nn
+from torch.utils.data import Dataset
 from sklearn.preprocessing import MinMaxScaler
-from model import Net
+from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import torch.optim as optim
 from process import NBADataProcessor, NBADataset
+from model import SimpleNet
 
+print("Program start ...")
 # Specify the relative path to the dataset
 relative_path = 'datasets/nba_games.csv'
 read_file = os.path.join(os.getcwd(), relative_path)
 
 # Initialize NBADataProcessor and prepare the dataset
+print("Processing Data ...")
 data_processor = NBADataProcessor(file_path=read_file)
 processed_df = data_processor.prepare_dataset()
 
-# Extract features and target using the _extract_features method
-features_df = data_processor._extract_features(processed_df)
+# # Load the data
+print("Loading training data...")
+train_dataloader, features_columns, features_df = data_processor.load_training_data()
 
-# Define features and target
-features_columns = features_df.columns.tolist()
-target_column = "target"
-
-features = features_df.values
-target = processed_df[target_column].values
-
-# Define dataset and dataloader
-dataset = NBADataset(features, target)
-dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-
-# Initialize and train the model
+# Initialize the model
 input_size = len(features_columns)
-net = Net(input_size=input_size)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-net.to(device)
+net = SimpleNet(input_size=input_size)
 
-criterion = torch.nn.BCELoss()
-optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
+# Train the model
+print("Training model ...")
+loss_values, accuracy_values = net.train_model(train_dataloader, num_epochs=30, lr=0.001)
 
-# Training loop
-num_epochs = 30
+#Test model
+print("Testing Model ...")
+# Plot loss and accuracy
+net.plot_loss(loss_values)
+net.plot_accuracy(accuracy_values)
 
-for epoch in range(num_epochs):
-    for inputs, labels in dataloader:
-        inputs, labels = inputs.to(device), labels.to(device)
-
-        optimizer.zero_grad()
-
-        outputs = net(inputs)
-        loss = criterion(outputs, labels.unsqueeze(1))
-
-        loss.backward()
-        optimizer.step()
-
-    # Print the loss for each epoch
-    print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {loss.item():.4f}")
-
-# Save the trained model
-torch.save(net.state_dict(), "trained_model.pth")
+# Perform backtesting
+net.backtest(features_df, features_columns)
