@@ -98,6 +98,12 @@ class NBADataProcessor:
         self.df = self._add_future_game_data(self.df)
         
         self.df = self.df.merge(self.df[rolling_cols + ["team_opp_next", "date_next", "team"]], left_on=["team", "date_next"], right_on=["team_opp_next", "date_next"])
+        
+        # Filter columns with _x or _y suffix, excluding opp_10_x and opp_10_y, and keep 'home_next'
+        suffix_columns = [col for col in self.df.columns if col.endswith(('_x', '_y')) and 'opp_10' not in col]
+        additional_columns = ['home_next','date_next', 'season', 'target']
+        selected_columns = suffix_columns + additional_columns
+        self.df = self.df[selected_columns]
 
         return self.df
     
