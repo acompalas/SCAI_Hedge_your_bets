@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix
 import torch.optim as optim
 
 
+
 class NBADataProcessor:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -142,16 +143,32 @@ class NBADataProcessor:
 
         # Define features and target
         features_columns = [col for col in features_df.columns if col not in ["season", "target"]]
+        
+        # Separate Valideation Set
+        
+        # Identify the cutoff season (e.g., 2022)
+        cutoff_season = 2022
+
+        # Divide the data into training and testing sets
+        train_df = features_df[features_df["season"] < cutoff_season]
+        test_df = features_df[features_df["season"] == cutoff_season]
 
         # Extract features and target for training and testing sets
-        train_features = features_df[features_columns].values
-        train_target = features_df[target_column].values
+        train_features = train_df[features_columns].values
+        train_target = train_df[target_column].values
 
-        # Create DataLoader for training
+        test_features = test_df[features_columns].values
+        test_target = test_df[target_column].values
+
+        # Define datasets and dataloaders for training and testing
         train_dataset = NBADataset(train_features, train_target)
-        train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+        test_dataset = NBADataset(test_features, test_target)
 
-        return train_dataloader, features_columns, features_df
+        # Define dataloaders
+        train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+        test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+        return train_dataloader, test_dataloader, features_columns, features_df
     
 class NBADataset(Dataset):
     def __init__(self, features, target):
@@ -165,3 +182,5 @@ class NBADataset(Dataset):
         x = torch.tensor(self.features[idx], dtype=torch.float32)
         y = torch.tensor(self.target[idx], dtype=torch.float32)
         return x, y
+    
+    

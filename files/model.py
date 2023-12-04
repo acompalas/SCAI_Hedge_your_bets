@@ -10,47 +10,40 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import torch.optim as optim
 from process import NBADataProcessor, NBADataset
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 class SimpleNet(nn.Module):
     def __init__(self, input_size):
         super(SimpleNet, self).__init__()
+        #self.batch_norm1 = nn.BatchNorm1d(128)
         self.fc1 = nn.Linear(input_size, 128)
-        self.batch_norm1 = nn.BatchNorm1d(128)
-        self.relu1 = nn.ReLU()
-        self.dropout1 = nn.Dropout(0.5)
-
-        self.fc2 = nn.Linear(128, 64)
-        self.batch_norm2 = nn.BatchNorm1d(64)
-        self.relu2 = nn.ReLU()
-        self.dropout2 = nn.Dropout(0.5)
-
-        self.fc3 = nn.Linear(64, 1)
+        self.relu = nn.ReLU()
+        
+        self.fc2 = nn.Linear(128, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.fc1(x)
-        x = self.batch_norm1(x)
-        x = self.relu1(x)
-        x = self.dropout1(x)
-
+        #x = self.batch_norm1(x)
+        x = self.relu(x)
         x = self.fc2(x)
-        x = self.batch_norm2(x)
-        x = self.relu2(x)
-        x = self.dropout2(x)
-
-        x = self.fc3(x)
         x = self.sigmoid(x)
         return x
     
-    def train_model(self, train_dataloader, num_epochs=30, lr=0.001):
+    def train_model(self, train_dataloader,test_dataloader, num_epochs=20, lr=0.001):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(device)
 
         criterion = torch.nn.BCELoss()
-        optimizer = torch.optim.Adam(self.parameters(), lr=lr, weight_decay=1e-5)
+        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
 
         loss_values = []  # To store the loss for each epoch
         accuracy_values = []  # To store the accuracy for each epoch
+        val_loss_values = []
+        val_accuracy_values = []
+        
+        # Define a scheduler
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=5, verbose=False)
 
         for epoch in range(num_epochs):
             self.train()
@@ -77,10 +70,31 @@ class SimpleNet(nn.Module):
 
                 epoch_loss += loss.item()
 
-            # Learning rate scheduling
-            if epoch % 5 == 0:
-                for param_group in optimizer.param_groups:
-                    param_group['lr'] *= 0.9  # Reduce learning rate by 10% every 5 epochs
+            # Validation loop
+            self.eval()  # Set the model to evaluation mode
+
+            val_correct = 0
+            val_total = 0
+            val_loss = 0.0
+
+            with torch.no_grad():
+                for val_inputs, val_labels in test_dataloader:
+                    val_inputs, val_labels = val_inputs.to(device), val_labels.to(device)
+
+                    val_outputs = self(val_inputs)
+                    val_loss += criterion(val_outputs, val_labels.unsqueeze(1)).item()
+
+                    # Calculate accuracy
+                    val_predictions = (val_outputs > 0.5).float()
+                    val_correct += (val_predictions == val_labels.unsqueeze(1)).float().sum()
+                    val_total += val_labels.size(0)
+
+            val_accuracy = (val_correct / val_total) * 100.0
+            val_average_loss = val_loss / len(test_dataloader)
+            val_loss_values.append(val_average_loss)
+            val_accuracy_values.append(val_accuracy)
+
+            scheduler.step(val_average_loss)  # Update the scheduler based on the validation loss
 
             # Calculate accuracy and loss for the epoch
             accuracy = (total_correct / total_examples) * 100.0
@@ -90,20 +104,22 @@ class SimpleNet(nn.Module):
             loss_values.append(average_loss)
             accuracy_values.append(accuracy)
 
-            # Print the loss and accuracy for each epoch
-            print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.4f}, Accuracy: {accuracy:.2f}%")
+            # Print the loss, accuracy, and validation metrics for each epoch
+            print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss:.4f}, Accuracy: {accuracy:.2f}%, Validation Loss: {val_average_loss:.4f}, Validation Accuracy: {val_accuracy:.2f}%")
 
-        return loss_values, accuracy_values
+        return loss_values, accuracy_values, val_loss_values, val_accuracy_values
     
-    def plot_loss(self, loss_values, title="Training Loss"):
-        plt.plot(loss_values, marker='o')
+    def plot_loss(self, loss_values, val_loss_values, title="Training Loss"):
+        plt.plot(loss_values, marker='o', label='Training Loss')
+        plt.plot(val_loss_values, marker='o', label='Validation Loss', color = 'green')
         plt.title(title)
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
         plt.show()
 
-    def plot_accuracy(self, accuracy_values, title="Training Accuracy"):
-        plt.plot(accuracy_values, marker='o', color='green')
+    def plot_accuracy(self, accuracy_values, val_accuracy_values, title="Training Accuracy"):
+        plt.plot(accuracy_values, marker='o')
+        plt.plot(val_accuracy_values, marker='o', color='green')
         plt.title(title)
         plt.xlabel("Epoch")
         plt.ylabel("Accuracy (%)")
