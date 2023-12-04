@@ -53,3 +53,8 @@ Had issues with data scraping. So we used pre-scraped box scores from https://ba
 You can download same dataset here https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqblVtX3hYQ1VlZGpvOWFra2pCa2stYUE2bUpXd3xBQ3Jtc0tua0VyUVRmRkFyM3cwQ3F2V0xQaWhEX21wTEJNQ0dhZ0ZfSTAyZUJzeFUtcTM3YU8xV0JrVk9jNzRHTC02QjEtc20zWW4tM1BTNVhpc2hOem5rQ3E4elg5eUo4MEVWWElFR202dU94RUlYd290VFhWcw&q=https%3A%2F%2Fdrive.google.com%2Fuc%3Fexport%3Ddownload%26id%3D1YyNpERG0jqPlpxZvvELaNcMHTiKVpfWe&v=egTylm6C2is.
 
 Live game data was fetched using this api https://github.com/swar/nba_api .
+
+### Presentation
+
+Link to slides: https://docs.google.com/presentation/d/1KEPykX0eR3bq5QOvLXCRvHzPMLLKokAOJ4VeGi92DDc/edit?usp=sharing
+

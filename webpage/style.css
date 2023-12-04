@@ -402,7 +402,7 @@ select {
 }
 
 .away-lose-box {
-  background: orange;
+  background: #FEDEA4;
   padding-left: 3%;
   float: right;
   width: 105px;
