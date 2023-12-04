@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- 
+      This is an HTML comment
+      You can write text in a comment and the content won't be visible in the page
+    -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="https://png.pngtree.com/png-clipart/20190520/original/pngtree-basketball-icon-png-image_3566085.jpg" />
+
+    <!--
+      This is the page head - it contains info the browser uses
+      Like the title, which appears on the browser tab but not inside the page
+      Further down you'll see the content that displays in the page
+    -->
+    <title>NBA Oracle</title>
+
+    <!-- The website stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- The website JavaScript file -->
+    <script src="/script.js" defer></script>
+    
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    
+  </head>
+  <body>
+    <!--
+      The body includes the content you see in the page
+      Each element is defined using tags, like this <div></div>
+      The attributes like class="wrapper" let us style elements in the CSS
+    -->
+    <div class="main">
+      <div class="navbar">
+        <div class="logobox">
+          <h1 class="logo">
+            NBA Oracle
+          </h1>
+        </div>
+      </div>
+      <!-- Searchbar Text -->
+      <div class="searchbar-text">
+        <ul class="searchbar-textbox">
+          <li class="search-boxlist">
+            <a class="search-boxHome">Home</a>
+            <a class="search-boxAway">Away</a>
+            <a class="search-boxHomeWin">Home Win %</a>
+            <a class="search-boxAwayLose">Away Lose %</a>
+          </li>
+        </ul>
+      </div>
+      <!-- Search bar -->
+      <!-- Drop down Home -->
+      <div class="searchbar">
+        <div class="custom-select-home">
+          <select id="HomeTeam">
+            <option value="">Select Team</option>
+            <option value="">POR</option>
+            <option value="">SAC</option>
+            <option value="">LAL</option>
+            <option value="">GSW</option>
+            <option value="">CHA</option>
+            <option value="">BKN</option>
+            <option value="">DET</option>
+            <option value="">MIA</option>
+            <option value="">CHI</option>
+            <option value="">MIL</option>
+            <option value="">DAL</option>
+          </select>
+        </div>
+        <!-- Drop down Away -->
+        <div class="custom-select-away">
+          <select id="AwayTeam">
+            <option value="">Select Team</option>
+            <option value="">UTA</option>
+            <option value="">DEN</option>
+            <option value="">HOU</option>
+            <option value="">LAC</option>
+            <option value="">MIN</option>
+            <option value="">ORL</option>
+            <option value="">CLE</option>
+            <option value="">IND</option>
+            <option value="">NOP</option>
+            <option value="">ATL</option>
+            <option value="">OKC</option>
+          </select>
+        </div>
+        <!-- Submit Button -->
+        <div class="submit-button">
+          <button class="submit">
+          Submit
+        </button>
+        </div>
+        <!-- Text Home Win -->
+        <div class="home-win-box">
+          <h2 class="home-win-text" id="HomeWin">
+              ----
+          </h2>
+        </div>
+        <!-- Text Away Lose -->
+        <div class="away-lose-box">
+          <h2 class="home-win-text" id="AwayLose">
+              ----
+          </h2>
+        </div>
+      </div>
+    <!-- TABLE -->
+      <table>
+        <tr>
+          <th>Home</th>
+          <th>Away</th>
+          <th>Date</th>
+          <th>Winner</th>
+        </tr>
+        <tr>
+          <td>POR</td>
+          <td>UTA</td>
+          <td>2023-12-03</td>
+          <td>POR</td>
+        </tr>
+        <tr>
+          <td>SAC</td>
+          <td>DEN</td>
+          <td>2023-12-03</td>
+          <td>SAC</td>
+        </tr>
+        <tr>
+          <td>LAL</td>
+          <td>HOU</td>
+          <td>2023-12-03</td>
+          <td>LAL</td>
+        </tr>
+        <tr>
+          <td>GSW</td>
+          <td>LAC</td>
+          <td>2023-12-02</td>
+          <td>GSW</td>
+        </tr>
+        <tr>
+          <td>CHA</td>
+          <td>MIN</td>
+          <td>2023-12-02</td>
+          <td>CHA</td>
+        </tr>
+        <tr>
+          <td>BKN</td>
+          <td>ORL</td>
+          <td>2023-12-03</td>
+          <td>BKN</td>
+        </tr>
+        <tr>
+          <td>DET</td>
+          <td>CLE</td>
+          <td>2023-12-03</td>
+          <td>DET</td>
+        </tr>
+        <tr>
+          <td>MIA</td>
+          <td>IND</td>
+          <td>2023-12-03</td>
+          <td>MIA</td>
+        </tr>
+        <tr>
+          <td>CHI</td>
+          <td>NOP</td>
+          <td>2023-12-03</td>
+          <td>CHI</td>
+        </tr>
+        <tr>
+          <td>MIL</td>
+          <td>ATL</td>
+          <td>2023-12-03</td>
+          <td>MIL</td>
+        </tr>
+        <tr>
+          <td>DAL</td>
+          <td>OKC</td>
+          <td>2023-12-03</td>
+          <td>DAL</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

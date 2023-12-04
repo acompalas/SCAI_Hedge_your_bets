@@ -1,0 +1,443 @@
+/******************************************************************************
+START Glitch hello-app default styles
+
+The styles in this section do some minimal CSS resets, set default fonts and 
+colors, and handle the layout for our footer and "Remix on Glitch" button. If
+you're new to CSS they may seem a little complicated, but you can scroll down
+to this section's matching END comment to see page-specific styles.
+******************************************************************************/
+
+
+/* 
+  The style rules specify elements by type and by attributes such as class and ID
+  Each section indicates an element or elements, then lists the style properties to apply
+  See if you can cross-reference the rules in this file with the elements in index.html
+*/
+
+/* Our default values set as CSS variables */
+:root {
+  --color-bg: #69F7BE;
+  --color-text-main: #000000;
+  --color-primary: #FFFF00;
+  --wrapper-height: 87vh;
+  --image-max-width: 300px;
+  --image-margin: 3rem;
+  --font-family: 'Lato';
+  --font-family-header: 'Lato';
+}
+
+/* Basic page style resets */
+* {
+  margin: 0;
+  padding:0;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* Import fonts */
+@font-face {
+  font-family: Lato;
+  src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027")
+    format("opentype");
+}
+@font-face {
+  font-family: Latok;
+  font-weight: bold;
+  src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437")
+    format("opentype");
+}
+
+/* Our remix on glitch button */
+.btn--remix {
+  font-family: 'Lato', sans-serif;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  line-height: 1rem;
+  font-weight: 500;
+  height: 2.75rem;
+  align-items: center;
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #000;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.btn--remix img {
+  margin-right: 0.5rem;
+}
+.btn--remix:hover {
+  background-color: #D0FFF1;
+}
+
+/* Navigation grid */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem auto 0;
+  padding: 1rem 0 0.75rem 0;
+  width: 100%;
+  flex-wrap: wrap;
+  border-top: 4px solid #fff;
+}
+
+.footer a:not(.btn--remix):link,
+a:not(.btn--remix):visited {
+  font-family: 'Lato', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.1rem;
+  color: #000;
+  text-decoration: none;
+  border-style: none;
+}
+.footer a:hover {
+  background: var(--color-primary);
+}
+
+.footer .links {
+  padding: 0.5rem 1rem 1.5rem;
+  white-space: nowrap;
+}
+
+.divider {
+  padding: 0 1rem;
+}
+/******************************************************************************
+END Glitch hello-app default styles
+******************************************************************************/
+
+body {
+  font-family: 'Lato', sans-serif;
+  background-color: black;
+}
+
+/* Page structure */
+.wrapper {
+  min-height: var(--wrapper-height);
+  display: grid;
+  place-items: center;
+  margin: 0 1rem;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Very light scaling for our illustration */
+.title {
+  color: #2800FF;
+  font-family: 'Lato', sans-serif;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 100px;
+  line-height: 105%;
+  margin: 0;
+}
+
+/* Very light scaling for our illustration */
+.illustration {
+  max-width: 100%;
+  max-height: var(--image-max-width);
+  margin-top: var(--image-margin);
+}
+
+/* Instructions */
+.instructions {
+  margin: 1rem auto 0;
+}
+
+/* Button - Add it from the README instructions */
+button,
+input {
+  font-family: inherit;
+  font-size: 100%;
+  background: #FFFFFF;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  transition: 500ms;
+}
+
+/* Subheading */
+h2 {
+  color: #2800FF;
+}
+
+/* Interactive image */
+.illustration:active {
+  transform: translateY(5px);
+}
+
+/* Button dip
+- Toggling this class on and off will move it down and up again
+- The button transition property above determines the speed of the translate (500ms)
+*/
+.dipped {
+  transform: translateY(5px);
+}
+
+/* Links that open files in the editor */
+.fileopener {
+  cursor:pointer;
+  font-weight:bold;
+  border-bottom:3px solid var(--color-primary);
+  color: var(--color-secondary);
+}
+.fileopener:hover {
+  border-bottom:3px solid var(--color-secondary);
+}
+
+/******************************************************************************
+START of my code here
+******************************************************************************/
+.main{
+    width: 100%;
+    background: white ;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    height: 109vh;
+    overflow: auto;
+}
+
+.navbar{
+    width:100%;
+    height: 75px;
+    background: #252B33;
+    margin: auto;
+    display: flex;
+    align-items: center;
+
+}
+
+.logobox {
+    width: 300px;
+    float: left;
+    height: 70px;
+
+}
+
+.logo {
+    color: white;
+    font-size: 40px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    padding-left: 20px;
+    float: left;
+    padding-top: 10px;
+}
+
+/* Searchbar Text */
+
+.searchbar-text {
+  /* background: orange; */
+  padding-top: 30px;
+  padding-left: 10px;
+  width: 100%;
+  float: left;
+  height: 40px;
+}
+
+.searchbar-textbox {
+  display: inline;
+}
+
+.search-boxHome {
+  color: black;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    padding-left: 10%;
+    float: left;
+}
+
+.search-boxAway {
+  color: black;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    padding-left: 16%;
+    float: left;
+}
+
+.search-boxHomeWin {
+  color: black;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    padding-left: 30%;
+    float: left;
+}
+
+.search-boxAwayLose {
+  color: black;
+    font-size: 20px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    padding-left: 10%;
+    float: left;
+}
+
+/* Search bar itself */
+
+.searchbar {
+  /* background: grey; */
+  display: flex;
+  padding-left: 7%;
+  width: 100%;
+  float: left;
+  height: 70px;
+}
+
+.custom-select-home {
+  min-width: 160px;
+  position: relative;
+}
+
+.custom-select-away {
+  min-width: 160px;
+  position: relative;
+  padding-left: 8%;
+}
+
+.submit-button {
+  padding-left: 8%;
+  padding-right: 8%
+}
+
+.submit {
+  background: #E6E6E6;
+  width: 100px;
+  height: 53px;
+  border: none;
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  padding: 0.675em 1em 0.675em 1em;
+  background-color: #FEDEA4;
+  border: 1px solid #FEDEA4;
+  border-radius: 0.25rem;
+  color: #000;
+  cursor: pointer;
+}
+
+.custom-select-home::before,
+.custom-select-home::after {
+  --size: 0.3rem;
+  content: "";
+  position: absolute;
+  right: 1rem;
+  pointer-events: none;
+}
+
+.custom-select-home::before {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-bottom: var(--size) solid black;
+  top: 33%;
+}
+
+.custom-select-home::after {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-top: var(--size) solid black;
+  top: 43%;
+}
+
+.custom-select-away::before,
+.custom-select-away::after {
+  --size: 0.3rem;
+  content: "";
+  position: absolute;
+  right: 1rem;
+  pointer-events: none;
+}
+
+.custom-select-away::before {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-bottom: var(--size) solid black;
+  top: 33%;
+}
+
+.custom-select-away::after {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-top: var(--size) solid black;
+  top: 43%;
+}
+
+.home-win-box {
+  background: #FEDEA4;
+  padding-left: 50px;
+  margin-right: 7%;
+  width: 105px;
+  height: 53px;
+  /* position: absolute; */
+  /* left: 800px; */
+}
+
+.home-win-text {
+  color: black;
+  font-size: 20px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  padding-top: 11px;
+}
+
+.away-lose-box {
+  background: orange;
+  padding-left: 3%;
+  float: right;
+  width: 105px;
+  height: 53px;
+  /* position: absolute; */
+  /* left: 1050px; */
+}
+
+/* Table */
+table {
+  font-family: 'Lato', sans-serif;
+  border-collapse: collapse;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 12%
+}
+
+th {
+  border: 2px solid #FCEFEE;
+  text-align: left;
+  padding: 8px;
+  text-align: center;
+}
+
+td {
+  border: 2px solid #FCEFEE;
+  text-align: left;
+  padding: 8px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background-color: #FEDEA4;
+}
+
+tr:nth-child(odd) {
+  background-color: #FBE8E7;
+}
